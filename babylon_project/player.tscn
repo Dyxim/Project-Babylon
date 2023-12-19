@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Player/player.gd" type="Script" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 16, 16 )
+
+[node name="player" type="KinematicBody2D"]
+position = Vector2( 33, 24 )
+collision_mask = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="S_player" type="Sprite" parent="."]
+light_mask = 512
+position = Vector2( 3.8147e-06, 1.90735e-06 )
+scale = Vector2( 0.4375, 0.4375 )
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5708
+scale = Vector2( 0.875, 0.875 )
+shape = SubResource( 4 )
+
+[connection signal="input_event" from="." to="." method="_on_player_input_event"]
