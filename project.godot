@@ -11,13 +11,13 @@ config_version=5
 [application]
 
 config/name="basic project"
-run/main_scene="res://main_menu.tscn"
+run/main_scene="res://levels/main_menu_good.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Events="*res://Events.gd"
+Events="*res://scripts/Events.gd"
 LevelTransition="*res://level_transition.tscn"
 
 [display]
