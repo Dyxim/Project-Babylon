@@ -25,8 +25,6 @@ func _ready():
 	polygon_2d.polygon = collision_polygon_2d.polygon
 	gravity_center_position = Vector2(center_of_gravity.position.x,center_of_gravity.position.y)
 	
-	c_gravity_area.body_entered.connect(area_gravity_changer_entered)
-	c_gravity_area.body_exited.connect(area_gravity_changer_exited)
 	Events.main_menu.connect(to_main_menu)
 	Events.right_level.connect(change_level_right)
 	Events.left_level.connect(change_level_left)
@@ -41,43 +39,38 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
-#	player.position.x+=1
-
-func area_gravity_changer_entered(body2d):
-	if body2d == player:
-		player.gravity_point = c_gravity_area.gravity_point_center
-		player.gravity =  c_gravity_area.gravity
-	pass
-
-func area_gravity_changer_exited(body2d):
-	if body2d == player:
-		player.gravity_point = null
-	pass
+#	pass
 
 
 func change_scene(new_scene) -> void:
-	await $LevelTransition.fade_to_black()
+	
+	
 	if new_scene is PackedScene:
+		await $LevelTransition.fade_to_black()
 		await get_tree().change_scene_to_packed(new_scene)
 	elif new_scene is String:
+		await $LevelTransition.fade_to_black()
 		await get_tree().change_scene_to_file(new_scene)
 	else:
 		return
+	
 	$LevelTransition.fade_from_black()
 
+
 func to_main_menu():
-	print('main')
 	await change_scene("res://main_menu.tscn")
+
 
 func change_level_right():
 	await change_scene(level_right)
 
+
 func change_level_left():
 	await change_scene(level_left)
 
+
 func change_level_up():
 	await change_scene(level_up)
-
 
 
 func change_level_down():

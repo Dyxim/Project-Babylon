@@ -9,3 +9,5 @@ signal door1
 signal door2
 signal door3
 signal door4
+
+signal change_scene

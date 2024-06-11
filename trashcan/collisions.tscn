@@ -1,7 +1,7 @@
-[gd_scene format=2]
+[gd_scene format=3 uid="uid://d2v3dkim808pk"]
 
 [node name="player" type="Node2D"]
-position = Vector2( 0, -1 )
+position = Vector2(0, -1)
 
 [node name="creatures" type="Node" parent="."]
 

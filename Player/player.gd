@@ -16,15 +16,17 @@ var animation_prefix=""
 
 var floating=false #is not affected by gravity ?
 
-var mass = 1
+var height_of_jump=1#height of the jump in tiles
 
-var jump= 300
+var mass = 1
 
 var coyote_jump = 0
 
 var frixion = 750
 
 var gravity=-500  #gravity strength
+
+@export var jump= -gravity*height_of_jump/4 #non linear between jump = 200 and jump = 300, have to fix that
 
 var p_walkaccel = 500 
 
@@ -131,10 +133,10 @@ func p_mvt(delta):
 	
 	
 	
-	impacts = []
+	#impacts = []
 	var input_vector = Vector2.ZERO
-	var bounced_vec=Vector2.ZERO
-	var floor_normal = 0
+	#var bounced_vec=Vector2.ZERO
+	#var floor_normal = 0
 	
 	
 	input_vector = get_inputs(delta,input_vector,vec_gravity)
@@ -188,7 +190,7 @@ func test_impacts():
 
 func jump_(delta):
 	if is_on_floor():
-		coyote_jump = 0.3
+		coyote_jump = 0.2
 		
 	
 	
@@ -197,7 +199,7 @@ func jump_(delta):
 	if Input.is_action_pressed("ui_up"):
 		if coyote_jump>0:
 			coyote_jump=0
-			print(up_direction)
+			#print(up_direction)
 			return jump*up_direction 
 	else:
 		pass
@@ -274,14 +276,7 @@ func update_up_direction():
 	elif gravity_vect!=Vector2.ZERO:
 		change_up_direction(gravity_vect)
 	#else : don't change the up_direction
-		
-	#print(centered_gravity)
-#
-#	
-#	if Input.is_action_just_pressed("ui_accept") and not Input.is_action_just_pressed("ui_select"):
-#		print('something')
-#		change_up_direction(up_direction.rotated(PI/8))
-#	pass
+	
 
 
 func change_up_direction(n_direction):
@@ -316,7 +311,7 @@ func change_up_direction(n_direction):
 
 
 
-func apply_accel(delta,a_vector,v_vector,max_Speed=800):
+func apply_accel(delta,a_vector,v_vector,max_hSpeed=300,max_vSpeed=2000):
 	
 	if v_vector.dot(left_dir)*a_vector.dot(left_dir)<=0:#HELL YEAH IT WORKS
 		v_vector = v_vector.move_toward(up_direction*up_direction.dot(v_vector),12.5*frixion*delta*speed_scale)
@@ -325,9 +320,16 @@ func apply_accel(delta,a_vector,v_vector,max_Speed=800):
 			v_vector = v_vector.move_toward(left_dir*left_dir.dot(v_vector),12.5*frixion*delta*speed_scale)
 	
 	v_vector += a_vector*speed_scale
+	#v_vector = v_vector.clamp(max_hSpeed*left_dir-2000*up_direction,-max_hSpeed*left_dir+1000*up_direction)
 	
+	#the line below limits the strength of the vector, it's ugly but I didn't know how to do differently at the time.
+	v_vector = left_dir*min(abs(max_hSpeed*left_dir.dot(left_dir)),abs(v_vector.dot(left_dir)))*sign(v_vector.dot(left_dir))   +   up_direction*min(abs(max_vSpeed*up_direction.dot(up_direction)),abs(v_vector.dot(up_direction)))*sign(v_vector.dot(up_direction))
+	
+	
+	
+	return v_vector
 #	print(v_vector)#for tests
-	return v_vector.limit_length(max_velocity)
+	#return v_vector.limit_length(max_velocity)
 
 
 
