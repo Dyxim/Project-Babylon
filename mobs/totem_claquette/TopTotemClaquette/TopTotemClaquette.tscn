@@ -17,7 +17,7 @@ var lenght_bottom_totem=null
 var width_bottom_totem=null
 var fusion = false
 var projectile_direction=null
-
+var on_bottom_totem=false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self_width = get_node(\"HitboxTopTotem\").shape.extents.y * 2
@@ -64,10 +64,10 @@ func _on_detection_area_player_body_exited(body):
 
 # Function to merge the totems
 func totem_merge():
+		$ProjectileTimer.stop()
 		player_chase = false  # Stop chasing the player
 		var direction = (totem.global_position - self.global_position).normalized()#Go to the x position of the bottom totem
 		velocity.x = direction.x * speed
-		print(direction.x)
 		#If the totem is close enough to the other, it climbs on top of it
 		if (self.global_position.x<=totem.global_position.x+lenght_bottom_totem+2) and (self.global_position.x>=totem.global_position.x-lenght_bottom_totem-2):
 			velocity=Vector2(0,-width_bottom_totem)
@@ -77,11 +77,16 @@ func totem_merge():
 				if (direction.x<=0.01) and (direction.x>=-0.01):
 					fusion=false
 					player_chase=true
+					on_bottom_totem=true
 					velocity.y=0
+					$ProjectileTimer.start()
 #Function to chase the player, the totem goes towards the player and fires a projectile at regular intervals
 func chase_player():
-	print(\"JE TE CHASSE TA GRAND MERE\")
 	if player_chase:
+		if on_bottom_totem==true:
+			self.velocity=Vector2.ZERO
+			projectile_direction=totem.get(\"projectile_direction\")
+		elif on_bottom_totem==false:
 			var direction = (player.global_position - self.position).normalized()* speed
 			if direction.x>0:
 					get_node(\"AnimatedSprite2D\").flip_h=true
@@ -89,7 +94,7 @@ func chase_player():
 			else:
 					get_node(\"AnimatedSprite2D\").flip_h = false
 					projectile_direction=false
-			velocity.x = direction.x 
+			velocity.x = sign(direction.x)*speed
 	else:
 		velocity = lerp(velocity, Vector2.ZERO, 0.01)
 		velocity.x = 0  # Stop horizontal movement when `player_chase` is disabled
@@ -99,8 +104,6 @@ func _on_projectile_timer_timeout():
 	var b = projectile.instantiate()
 	get_tree().root.add_child(b)
 	b.start(position,projectile_direction)
-	print(\"Top : \")
-	print(projectile_direction)
 	$ProjectileTimer.start()
 	
 func death():
@@ -136,6 +139,7 @@ size = Vector2(443, 310)
 radius = 116.004
 
 [node name="TopTotemClaquette" type="CharacterBody2D" groups=["TopTotemClaquette"]]
+collision_layer = 3
 script = SubResource("GDScript_omxb6")
 
 [node name="HitboxTopTotem" type="CollisionShape2D" parent="."]

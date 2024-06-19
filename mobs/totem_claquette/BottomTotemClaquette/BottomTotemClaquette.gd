@@ -59,7 +59,7 @@ func chase_player():
 			else:
 					get_node("AnimatedSprite2D").flip_h = false
 					projectile_direction=false
-			velocity.x = direction.x 
+			velocity.x = sign(direction.x)*speed
 	else:
 		velocity = lerp(velocity, Vector2.ZERO, 0.01)
 		velocity.x = 0  # Stop horizontal movement when `player_chase` is disabled
@@ -69,8 +69,6 @@ func _on_projectile_timer_timeout():
 	var b = projectile.instantiate()
 	get_tree().root.add_child(b)
 	b.start(position,projectile_direction)
-	print("Bottom : ")
-	print(projectile_direction)
 	$ProjectileTimer.start()
 
 func death():
