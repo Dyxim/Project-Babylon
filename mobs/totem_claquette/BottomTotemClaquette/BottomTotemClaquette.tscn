@@ -20,8 +20,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_dhu8k"]
-radius = 181.099
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8rcdp"]
+size = Vector2(443, 310)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nda7s"]
 radius = 116.004
@@ -48,11 +48,10 @@ sprite_frames = SubResource("SpriteFrames_hyb8k")
 animation = &"idle"
 
 [node name="DetectionAreaPlayer" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionAreaPlayer"]
 position = Vector2(18, 18)
-shape = SubResource("CircleShape2D_dhu8k")
+shape = SubResource("RectangleShape2D_8rcdp")
 
 [node name="DetectionAreaTopTotem" type="Area2D" parent="."]
 visible = false

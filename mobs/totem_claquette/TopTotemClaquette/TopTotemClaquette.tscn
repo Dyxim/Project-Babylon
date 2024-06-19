@@ -16,6 +16,8 @@ var self_lenght=null
 var lenght_bottom_totem=null
 var width_bottom_totem=null
 var fusion = false
+var projectile_direction=null
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self_width = get_node(\"HitboxTopTotem\").shape.extents.y * 2
@@ -27,7 +29,7 @@ func _process(delta):
 	#Test if totem is merging
 	if fusion==true:
 		totem_merge()
-	else:#If there are not merging, it chase the player
+	elif (player_chase==true) and (player!=null):#If there are not merging, it chase the player
 		chase_player()
 	move_and_slide()
 
@@ -50,12 +52,14 @@ func _on_detection_area_player_body_entered(body):
 	if body.is_in_group(\"Player\"):
 		player = body
 		player_chase = true
+		$ProjectileTimer.start()
 
 
 func _on_detection_area_player_body_exited(body):
 	if body.is_in_group(\"Player\"):
 		player = null
 		player_chase = false
+		$ProjectileTimer.stop()
 		
 
 # Function to merge the totems
@@ -63,7 +67,7 @@ func totem_merge():
 		player_chase = false  # Stop chasing the player
 		var direction = (totem.global_position - self.global_position).normalized()#Go to the x position of the bottom totem
 		velocity.x = direction.x * speed
-		
+		print(direction.x)
 		#If the totem is close enough to the other, it climbs on top of it
 		if (self.global_position.x<=totem.global_position.x+lenght_bottom_totem+2) and (self.global_position.x>=totem.global_position.x-lenght_bottom_totem-2):
 			velocity=Vector2(0,-width_bottom_totem)
@@ -72,26 +76,31 @@ func totem_merge():
 				velocity.x = direction.x * speed
 				if (direction.x<=0.01) and (direction.x>=-0.01):
 					fusion=false
+					player_chase=true
 					velocity.y=0
 #Function to chase the player, the totem goes towards the player and fires a projectile at regular intervals
 func chase_player():
+	print(\"JE TE CHASSE TA GRAND MERE\")
 	if player_chase:
-			$ProjectileTimer.start()
 			var direction = (player.global_position - self.position).normalized()* speed
 			if direction.x>0:
 					get_node(\"AnimatedSprite2D\").flip_h=true
+					projectile_direction=true
 			else:
 					get_node(\"AnimatedSprite2D\").flip_h = false
+					projectile_direction=false
 			velocity.x = direction.x 
 	else:
 		velocity = lerp(velocity, Vector2.ZERO, 0.01)
-		velocity.x = 0  # Arrête le mouvement horizontal lorsque `player_chase` est désactivé
+		velocity.x = 0  # Stop horizontal movement when `player_chase` is disabled
 
 #When the timer is timeout, a projectile spawn
 func _on_projectile_timer_timeout():
 	var b = projectile.instantiate()
 	get_tree().root.add_child(b)
-	b.start(position)
+	b.start(position,projectile_direction)
+	print(\"Top : \")
+	print(projectile_direction)
 	$ProjectileTimer.start()
 	
 func death():
@@ -120,8 +129,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_q2kcc"]
-radius = 181.099
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8uf4e"]
+size = Vector2(443, 310)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bgbfj"]
 radius = 116.004
@@ -145,14 +154,12 @@ scale = Vector2(0.045, 0.047)
 sprite_frames = SubResource("SpriteFrames_7xa0i")
 
 [node name="DetectionAreaPlayer" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionAreaPlayer"]
-position = Vector2(16, 18)
-shape = SubResource("CircleShape2D_q2kcc")
+position = Vector2(18, 18)
+shape = SubResource("RectangleShape2D_8uf4e")
 
 [node name="DetectionAreaBottomTotem" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionAreaBottomTotem"]
 position = Vector2(16, 18)
