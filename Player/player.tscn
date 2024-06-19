@@ -56,8 +56,9 @@ _data = {
 "PL_player_idle": SubResource("Animation_jdilb")
 }
 
-[node name="player" type="CharacterBody2D"]
+[node name="player" type="CharacterBody2D" groups=["Player"]]
 scale = Vector2(2, 2)
+collision_layer = 3
 safe_margin = 0.2
 script = ExtResource("1_5vtnd")
 
