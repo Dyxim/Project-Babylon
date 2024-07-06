@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://s8lfgjak4tx7"]
+[gd_scene load_steps=9 format=3 uid="uid://s8lfgjak4tx7"]
 
 [ext_resource type="PackedScene" uid="uid://da44wr7601ca0" path="res://level_template.tscn" id="1_xtlbv"]
 [ext_resource type="PackedScene" uid="uid://b6t12ei2nosv6" path="res://mobs/totem_claquette/TopTotemClaquette/TopTotemClaquette.tscn" id="2_1xqmc"]
 [ext_resource type="PackedScene" uid="uid://dsqye2sc2h2yf" path="res://c_gravity_area.tscn" id="2_b0dfx"]
 [ext_resource type="PackedScene" uid="uid://bclewffjxdq25" path="res://change_scene_area.tscn" id="3_jbchc"]
 [ext_resource type="PackedScene" uid="uid://mtdhfmqptfli" path="res://mobs/totem_claquette/BottomTotemClaquette/BottomTotemClaquette.tscn" id="5_v8vlx"]
+[ext_resource type="PackedScene" uid="uid://irpquugqy33h" path="res://mobs/onyx/onyx.tscn" id="6_qc0n0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5y2yo"]
 size = Vector2(104.6, 198.447)
@@ -15,10 +16,10 @@ size = Vector2(106.245, 60.1233)
 [node name="level_template" instance=ExtResource("1_xtlbv")]
 
 [node name="TopTotemClaquette2" parent="." index="0" instance=ExtResource("2_1xqmc")]
-position = Vector2(512, -277)
+position = Vector2(270, -341)
 
 [node name="player" parent="." index="1"]
-position = Vector2(418, -257)
+position = Vector2(111, 242)
 jump = 300
 
 [node name="TileMap" parent="." index="2"]
@@ -64,4 +65,7 @@ position = Vector2(3, 117)
 connected_scene = "res://levels/circle_world.tscn"
 
 [node name="BottomTotemClaquette2" parent="." index="10" instance=ExtResource("5_v8vlx")]
-position = Vector2(263, -340)
+position = Vector2(639, -280)
+
+[node name="Onyx" parent="." index="11" instance=ExtResource("6_qc0n0")]
+position = Vector2(227, 175)
