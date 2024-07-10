@@ -21,7 +21,7 @@ size = Vector2(15.5, 15.5)
 size = Vector2(12, 16)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7s2ea"]
-radius = 168.0
+radius = 102.005
 
 [node name="Onyx" type="CharacterBody2D"]
 script = ExtResource("1_fnkml")
@@ -34,6 +34,7 @@ sprite_frames = SubResource("SpriteFrames_ocjb2")
 animation = &"idle"
 
 [node name="HitboxOnyx" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(8, 8)
 shape = SubResource("RectangleShape2D_gmb5t")
 
@@ -50,12 +51,8 @@ position = Vector2(8, 8)
 shape = SubResource("CircleShape2D_7s2ea")
 
 [node name="PositionTimer" type="Timer" parent="."]
+wait_time = 2.0
 
-[node name="WaitingTimerGoBackToPosition" type="Timer" parent="."]
-wait_time = 3.0
-
-[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
 [connection signal="body_entered" from="DetectionAreaPlayer" to="." method="_on_detection_area_player_body_entered"]
 [connection signal="body_exited" from="DetectionAreaPlayer" to="." method="_on_detection_area_player_body_exited"]
 [connection signal="timeout" from="PositionTimer" to="." method="_on_position_timer_timeout"]
-[connection signal="timeout" from="WaitingTimerGoBackToPosition" to="." method="_on_waiting_timer_go_back_to_position_timeout"]
