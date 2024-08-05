@@ -1,6 +1,6 @@
 extends MarginContainer
 @onready var start_button = $CenterContainer/VBoxContainer/start_Button
-@export var first_level:String
+@export var first_level:PackedScene
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -12,7 +12,6 @@ func _ready():
 
 func start():
 	print("start")
-	#get_tree().change_scene_to_packed(first_level)
-	get_tree().change_scene_to_file(first_level)
+	get_tree().change_scene_to_packed(first_level)
 
 

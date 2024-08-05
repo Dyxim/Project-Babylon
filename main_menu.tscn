@@ -11,7 +11,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dqss8")
-first_level = "res://levels/intro.tscn"
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 2

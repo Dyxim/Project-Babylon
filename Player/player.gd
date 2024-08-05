@@ -13,10 +13,7 @@ var speed_scale = 1.5
 #var velocity = Vector2.ZERO
 
 var animation_prefix=""
-
 var floating=false #is not affected by gravity ?
-
-var dynamic_left_perception=false
 
 var height_of_jump=1#height of the jump in tiles
 
@@ -59,7 +56,7 @@ var gravity_point=null
 var gravity_vect = -up_direction
 
 
-
+var is_punching = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -94,8 +91,13 @@ func _process(delta):# try to change to _physics_process
 	if Input.is_action_just_pressed("ui_cancel"):
 		Events.main_menu.emit()
 	
+	
+	
+	
+	
 	if not floating:
 		update_up_direction()
+	
 	
 	if Input.is_action_pressed("ui_a"):
 		print(rotation_degrees)
@@ -126,7 +128,7 @@ func p_mvt(delta):
 	var vec_gravity = up_direction*gravity
 	
 	
-	#test_impacts()
+	test_impacts()
 	
 	
 	
@@ -156,21 +158,18 @@ func p_mvt(delta):
 
 func get_inputs(delta,input_vector,vec_gravity):
 	"""registers the input vectors and adds tehir corresponding accel_vectors to accel"""
-	if floating:#changes the movement from plateformer to top-down, ask Phantom/tillterran for details if needed
+	if floating:#changes the movement from plateformer to top-down, ask Phantom for details if needed
 		input_vector = left_dir * (Input.get_axis("ui_right","ui_left"))
 		input_vector += up_direction  * (Input.get_axis("ui_down","ui_up"))
 		accel+=input_vector*p_walkaccel*delta
 		
 	else:
 		input_vector = left_dir * (Input.get_axis("ui_right","ui_left"))
-		if dynamic_left_perception:
-			change_left_perception(input_vector)
+		change_left_perception(input_vector)
 		
 		accel+=vec_gravity*delta
-		accel+=jump_(delta,vec_gravity)
+		accel+=jump_(delta)
 		accel+=input_vector*input_left_dir*p_walkaccel*delta
-		if Input.is_action_pressed("ui_text_backspace"):
-			print(accel.dot(up_direction))
 	
 	return input_vector
 
@@ -188,7 +187,7 @@ func test_impacts():
 
 
 
-func jump_(delta,vec_gravity):
+func jump_(delta):
 	if is_on_floor():
 		coyote_jump = 0.2
 		
@@ -200,8 +199,7 @@ func jump_(delta,vec_gravity):
 		if coyote_jump>0:
 			coyote_jump=0
 			#print(up_direction)
-			print(jump*up_direction-vec_gravity*delta)
-			return jump*up_direction-vec_gravity*delta
+			return jump*up_direction 
 	else:
 		pass
 			
@@ -244,15 +242,48 @@ func add_force(force):
 
 func update_animation(input_vector):
 	
-	if input_vector!=Vector2.ZERO:
-		player_sprite.play("run")
-		player_sprite.flip_h = (input_vector.dot(-left_dir)<0)
+	
+	if Input.is_action_just_pressed("ui_right") :
+		if $punchhitbox.position.x < 0 :
+			$punchhitbox.position.x = $punchhitbox.position.x * -1
+		$SpriteTree/Run.flip_h = false
+		$SpriteTree/Idle.flip_h = false
+		$SpriteTree/Punch.flip_h = false
+	if Input.is_action_just_pressed("ui_left") :
+		if $punchhitbox.position.x > 0 :
+			$punchhitbox.position.x = $punchhitbox.position.x * -1
+		$SpriteTree/Run.flip_h = true
+		$SpriteTree/Idle.flip_h = true
+		$SpriteTree/Punch.flip_h = true
+
+	if input_vector!=Vector2.ZERO and $AnimationPlayer.current_animation != "PL_player_punch":
+		"Deux ligne suivant forcée due au faite ques les sprites sont séparé en plusieurs fichiers"
+		$SpriteTree/Idle.visible = false 
+		$SpriteTree/Run.visible = true 
+		$SpriteTree/Punch.visible = false
+		"$SpriteTree/Run.flip_h = (input_vector.dot(-left_dir)<0)"
+		$AnimationPlayer.play("PL_player_run")
 	else:
-		player_sprite.play("idle")
+		if $AnimationPlayer.current_animation != "PL_player_punch":
+			"Deux ligne suivant forcée due au faite ques les sprites sont séparé en plusieurs fichiers"
+			$SpriteTree/Idle.visible = true 
+			$SpriteTree/Run.visible = false 
+			$SpriteTree/Punch.visible = false
+			"$SpriteTree/Run.flip_h = (input_vector.dot(-left_dir)<0)"
+			$AnimationPlayer.play("PL_player_idle")
+	if Input.is_action_just_pressed("Punch") and $PunchCooldown.is_stopped():
+		print("Punch action")
+		$SpriteTree/Idle.visible = false 
+		$SpriteTree/Run.visible = false 
+		$SpriteTree/Punch.visible = true
+		$AnimationPlayer.play("PL_player_punch")
+		$PunchCooldown.start()
+	"""
 	
 	if not is_on_floor():
-		player_sprite.play("jump")
-
+		player_sprite.play("jump")"""
+	"""$SpriteTree.flip_h = (input_vector.dot(-left_dir)<0)"""
+	
 
 func change_left_perception(input_vector):
 	"""makes the right/left direction correspond to what's displayed on the screen
@@ -273,8 +304,7 @@ func change_left_perception(input_vector):
 func update_up_direction():
 	
 	if centered_gravity:
-		if gravity_point!=null:
-			change_up_direction(gravity_point-position)
+		change_up_direction(gravity_point-position)
 	elif gravity_vect!=Vector2.ZERO:
 		change_up_direction(gravity_vect)
 	#else : don't change the up_direction
@@ -314,6 +344,7 @@ func change_up_direction(n_direction):
 
 
 func apply_accel(delta,a_vector,v_vector,max_hSpeed=300,max_vSpeed=2000):
+	
 	if v_vector.dot(left_dir)*a_vector.dot(left_dir)<=0:#HELL YEAH IT WORKS
 		v_vector = v_vector.move_toward(up_direction*up_direction.dot(v_vector),12.5*frixion*delta*speed_scale)
 	if floating:
@@ -324,7 +355,7 @@ func apply_accel(delta,a_vector,v_vector,max_hSpeed=300,max_vSpeed=2000):
 	#v_vector = v_vector.clamp(max_hSpeed*left_dir-2000*up_direction,-max_hSpeed*left_dir+1000*up_direction)
 	
 	#the line below limits the strength of the vector, it's ugly but I didn't know how to do differently at the time.
-	v_vector = left_dir*min(abs(max_hSpeed),abs(v_vector.dot(left_dir)))*sign(v_vector.dot(left_dir))   +   up_direction*min(abs(max_vSpeed),abs(v_vector.dot(up_direction)))*sign(v_vector.dot(up_direction))
+	v_vector = left_dir*min(abs(max_hSpeed*left_dir.dot(left_dir)),abs(v_vector.dot(left_dir)))*sign(v_vector.dot(left_dir))   +   up_direction*min(abs(max_vSpeed*up_direction.dot(up_direction)),abs(v_vector.dot(up_direction)))*sign(v_vector.dot(up_direction))
 	
 	
 	
